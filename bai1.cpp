@@ -3,107 +3,67 @@
 
 using namespace std;
 
-struct Node{ 
-    string name;
-    int so_luong;
-    int gia_tien;
-    Node*next;
+struct Node{
+    string data;
+    Node* L;
+    Node* R;
 };
-
-struct queue {
-    Node *F = NULL;
-    Node *R = NULL;
-bool isEmpty() {
-    return F == NULL;
+Node* Tao_node(string x){
+    Node* newnode = new Node;
+    newnode->data = x;
+    newnode->L = NULL;
+    newnode->R = NULL;
+    return newnode;
 }
-bool isFull() {
-    Node *temp = new Node;
-    if(temp == NULL) {
-        return true;
-    }
-    delete temp;
-    return false;
+bool isEmty(Node* root){
+    return root == NULL;
 }
-
-void enqueue(string name, int price, int quantity) {
-    if(isFull()) {
-        cout<<"Hang doi tran"<< endl;
-        return;
+Node* Tao_cay(string Cay[], int& p, int n) {
+    if (p >= n) return NULL;
+    Node* node = Tao_node(Cay[p]);
+    p++;
+    if (node->data == "+" || node->data == "-" || node->data == "*" || node->data == "/" || node->data == "^") {
+        node->L = Tao_cay(Cay, p, n);
+        node->R = Tao_cay(Cay, p, n);
     }
 
-    Node* newNode = new Node{name,price,quantity,NULL};
-    if(R == NULL) {
-        F=R = newNode;
-    } else{
-        R->next = newNode;
-        R = newNode;
+    return node;
+}
+void LNR(Node* root) {
+    if (!isEmty(root)) {
+        if (root->L != NULL || root->R != NULL) cout << "("; 
+        LNR(root->L);
+        cout << root->data << " ";
+        LNR(root->R);
+        if (root->L != NULL || root->R != NULL) cout << ")"; 
     }
 }
-
-void dequeue() {
-    if(isEmpty()) {
-        cout<<"Hang doi trong"<< endl;
-        return;
+void NLR(Node* root){
+    if(!isEmty(root)){
+        cout<<root->data<<" ";
+        NLR(root->L);
+        NLR(root->R);
     }
-
-    Node *p = F;
-    F = F-> next;
-    if(F == NULL) {
-        R = NULL;
-    }
-    cout<<p->name<<" da thanh toan xong"<< endl;
-    delete p;
 }
-float TongsoTien() {
-    float sum = 0;
-    Node *p = F;
-    while(p != NULL){
-        sum += p-> gia_tien;
-        p=p->next;
+void LRN(Node* root){
+    if(!isEmty(root)){
+        LRN(root->L);
+        LRN(root->R);
+        cout<<root->data<<" ";
     }
-    return sum;
 }
-int SosanphamA() {
-    int count=0;
-    Node *p = F;
-    while(p != NULL) {
-        count+= p->so_luong;
-        p = p->next;
-    }
-    return count;
-}
-void clear() {
-    while(!isEmpty()) {
-        dequeue();
-    }
-  } 
-};
-
-int main() {
-    queue queue;
+int main(){
+    Node* root = NULL;
     int n;
-    if(queue.isEmpty()) {
-        cout<<"Hang doi trong"<< endl;
-    }
-    cout<<"nhap so khach cua cua hang: ";
-    cin>>n;
-    for(int i=0;i<=n;i++) {
-        string name;
-        int price, quantity;
-        cout<<"Nhap ten khach hang thu " <<i<< ": ";
-        cin>>name;
-        cout<<"So tien cua khach hang thu " <<i<< ": ";
-        cin>>price;
-        cout<<"Nhap so san pham A cua khach hang thu " <<i<< ": ";
-        cin>>quantity;
-        queue.enqueue(name, price, quantity);
-    }
-    if(!queue.isEmpty()) {
-        cout<<"Hang doi da full" <<endl;
-    }
-
-    cout<<"So san pham A la: "<<queue.SosanphamA()<< endl;
-    cout<<"Tong so tien thu duoc la: "<<queue.TongsoTien()<<endl;
-    queue.clear();
+    string Phan_tu[] = {"+", "-", "*", "a", "5", "/", "*", "b", "^", "c", "6", "5", "*", "-", "h", "f", "^", "e", "1/2"};
+    n = sizeof(Phan_tu) / sizeof(Phan_tu[0]);
+    int x = 0;
+    root = Tao_cay(Phan_tu,x,n);
+    LNR(root);
+    cout<<endl;
+    LRN(root);
+    cout<<endl;
+    NLR(root);
+    cout<<endl;
     return 0;
 }
